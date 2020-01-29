@@ -29,6 +29,10 @@ public class EntityChild extends CommonEntity {
     private EntityAdministrationUnit administrationUnit;
 
     @ManyToOne(fetch = FetchType.EAGER) //maybe change later for LAZY (dunno tho)
+    @JoinColumn(name = "user") //nullable = true
+    private EntityUser user;
+
+    @ManyToOne(fetch = FetchType.EAGER) //maybe change later for LAZY (dunno tho)
     @JoinColumn(name = "education") //nullable = true
     private EntityEducation education;
 
