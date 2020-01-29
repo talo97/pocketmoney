@@ -4,5 +4,8 @@ import com.ioproject.pocketmoney.common.CommonService;
 import com.ioproject.pocketmoney.entities.EntityAdministrationUnit;
 import com.ioproject.pocketmoney.entities.EntityUser;
 
+import java.util.Optional;
+
 public interface ServiceAdministrationUnit extends CommonService<EntityAdministrationUnit, Long> {
+    Optional<EntityAdministrationUnit> getByCityAndProvince(String city, String province);
 }

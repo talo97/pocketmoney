@@ -42,6 +42,10 @@ public class UserController {
         return serviceUser.getAll();
     }
 
+    /**
+     *
+     * @return currently logged in user
+     */
     @GetMapping("/currentUser")
     public ResponseEntity<EntityUserGetDTO> getCurrentUser() {
         log.info("Request to get current user");
@@ -55,8 +59,14 @@ public class UserController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
+    /**
+     * add user to database with default group privileges
+     *
+     * @param user DTO
+     * @return added user
+     */
     @PostMapping("/addUser")
-    public ResponseEntity<EntityUserPostDTO> createUser(@Valid @RequestBody EntityUserPostDTO user) throws URISyntaxException {
+    public ResponseEntity<EntityUserPostDTO> createUser(@Valid @RequestBody EntityUserPostDTO user){
         log.info("Request to create user: {}", user);
         if (user.containsEmptyValue()) {
             return ResponseEntity.badRequest().build();
@@ -78,18 +88,26 @@ public class UserController {
     }
 
     @PutMapping("/editCurrentUser")
-    public ResponseEntity<EntityUserEditDTO> updateCurrentUser(@Valid @RequestBody EntityUserEditDTO userEdit) {
+    public ResponseEntity<EntityUserGetDTO> updateCurrentUser(@Valid @RequestBody EntityUserEditDTO userEdit) {
         log.info("Request to update current user: {}", userEdit);
-        if (!userEdit.containsEmptyValue()) {
-            Optional<EntityUser> currentUser = getCurrentUserFromToken();
-            if (currentUser.isPresent()) {
+        Optional<EntityUser> currentUser = getCurrentUserFromToken();
+        if (currentUser.isPresent()) {
+            if (userEdit.getPassword() != null) {
                 currentUser.get().setPassword(userEdit.getPassword());
-                currentUser.get().setName(userEdit.getName());
-                currentUser.get().setSurname(userEdit.getSurname());
-                //save to DB
-                serviceUser.update(currentUser.get());
-                return ResponseEntity.ok().body(userEdit);
             }
+            if (userEdit.getName() != null) {
+                currentUser.get().setName(userEdit.getName());
+            }
+            if (userEdit.getSurname() != null) {
+                currentUser.get().setSurname(userEdit.getSurname());
+            }
+            //save to DB
+            serviceUser.update(currentUser.get());
+            Optional<EntityUserGetDTO> currentUserDTO;
+            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), EntityUserGetDTO.class));
+            currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
+            return currentUserDTO.map(response -> ResponseEntity.ok().body(response))
+                    .orElse(ResponseEntity.badRequest().build());
         }
         return ResponseEntity.badRequest().build();
     }
@@ -100,17 +118,5 @@ public class UserController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    //    @PutMapping("/user/{id}")
-//    ResponseEntity<EntityUser> updateGroup(@Valid @RequestBody EntityUser group, @PathVariable Long id) {
-//        log.info("Request to update group: {}", group);
-//        Optional<EntityUser> fromId = serviceUser.get(id);
-//        EntityUser result;
-//        if (fromId.isPresent()) {
-//            fromId.get().set(group.getGroupName());
-//            serviceUser.update(fromId.get());
-//            return ResponseEntity.ok().body(fromId.get());
-//        }
-//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
 
 }

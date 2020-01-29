@@ -7,11 +7,18 @@ import com.ioproject.pocketmoney.service.ServiceEducation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ServiceEducationImpl extends CommonServiceImpl<EntityEducation, DaoEducation, Long> implements ServiceEducation {
 
     @Autowired
     public ServiceEducationImpl(DaoEducation repository) {
         super(repository);
+    }
+
+    @Override
+    public Optional<EntityEducation> getByEducationLevel(String educationLevel) {
+        return repository.findFirstByEducationLevel(educationLevel);
     }
 }

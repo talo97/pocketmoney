@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 @CrossOrigin
 public class JwtAuthenticationController {
 
@@ -30,6 +31,13 @@ public class JwtAuthenticationController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    /**
+     * used to log in
+     *
+     * @param authenticationRequest username and password
+     * @return JWT token
+     * @throws Exception disabled/invalid credentials
+     */
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 

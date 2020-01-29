@@ -14,8 +14,9 @@ import javax.persistence.Table;
 @Setter
 public class EntityEducation extends CommonEntity {
 
-    @Column(name = "year")
-    private Integer educationYear;
+    //bedzie prosciej XD
+//    @Column(name = "year")
+//    private Integer educationYear;
 
     @Column(name = "level")
     private String educationLevel;
