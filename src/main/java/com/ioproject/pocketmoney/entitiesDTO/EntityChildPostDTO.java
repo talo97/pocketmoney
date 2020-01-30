@@ -10,14 +10,13 @@ public class EntityChildPostDTO {
     private String description = "";
     private String sex;
     private Boolean isLivingWithParents;
-    private String city;
-    private String province;
+    private String administrationUnit;
     private String educationLevel;
 
     /**
      * @return true if object has not all required values
      */
     public boolean doesntContainAllRequiredValues(){
-        return  pocketMoney == null || sex == null || isLivingWithParents == null ||  city == null || province == null ||  educationLevel == null;
+        return  pocketMoney == null || sex == null || isLivingWithParents == null ||  administrationUnit == null || educationLevel == null;
     }
 }

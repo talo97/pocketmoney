@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface DaoAdministrationUnit extends JpaRepository<EntityAdministrationUnit, Long> {
-    Optional<EntityAdministrationUnit> findByCityAndProvince(String city, String province);
+    Optional<EntityAdministrationUnit> findByName(String name);
 }

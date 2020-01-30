@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,7 +37,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     @Override
     public Optional<EntityChild> saveChildByPostDTO(EntityChildPostDTO dto, EntityUser currentUser) {
         //find adm unit by name
-        Optional<EntityAdministrationUnit> administrationUnit = serviceAdministrationUnit.getByCityAndProvince(dto.getCity(), dto.getProvince());
+        Optional<EntityAdministrationUnit> administrationUnit = serviceAdministrationUnit.getByName(dto.getAdministrationUnit());
         //find edu lvl by name
         Optional<EntityEducation> education = serviceEducation.getByEducationLevel(dto.getEducationLevel());
         //if both of them exist then create entity with given user
@@ -49,5 +50,10 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         }
         return Optional.empty();
         //save and return
+    }
+
+    @Override
+    public List<EntityChild> getAllByUser(EntityUser user) {
+        return repository.getAllByUser(user);
     }
 }

@@ -18,7 +18,7 @@ public class ServiceAdministrationUnitImpl extends CommonServiceImpl<EntityAdmin
     }
 
     @Override
-    public Optional<EntityAdministrationUnit> getByCityAndProvince(String city, String province) {
-        return repository.findByCityAndProvince(city,province);
+    public Optional<EntityAdministrationUnit> getByName(String name) {
+        return repository.findByName(name);
     }
 }
