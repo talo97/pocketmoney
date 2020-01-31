@@ -14,8 +14,11 @@ import java.util.Optional;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    ServiceUser serviceUser;
+    final ServiceUser serviceUser;
+
+    public JwtUserDetailsService(ServiceUser serviceUser) {
+        this.serviceUser = serviceUser;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {

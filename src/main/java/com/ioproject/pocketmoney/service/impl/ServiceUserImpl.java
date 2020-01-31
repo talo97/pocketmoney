@@ -17,14 +17,14 @@ import java.util.Optional;
 public class ServiceUserImpl extends CommonServiceImpl<EntityUser, DaoUser, Long> implements ServiceUser {
 
     @Autowired
-    public ServiceUserImpl(DaoUser repository) {
+    public ServiceUserImpl(DaoUser repository, ServiceGroup serviceGroup, ModelMapper modelMapper) {
         super(repository);
+        this.serviceGroup = serviceGroup;
+        this.modelMapper = modelMapper;
     }
 
-    @Autowired
-    private ServiceGroup serviceGroup;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ServiceGroup serviceGroup;
+    private final ModelMapper modelMapper;
 
     @Override
     public Optional<EntityUser> getByUsername(String username) {

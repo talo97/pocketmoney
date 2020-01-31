@@ -9,7 +9,6 @@ import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,11 +23,14 @@ import java.util.Optional;
 public class UserController {
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
 
-    @Autowired
-    private ServiceUser serviceUser;
+    private final ServiceUser serviceUser;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public UserController(ServiceUser serviceUser, ModelMapper modelMapper) {
+        this.serviceUser = serviceUser;
+        this.modelMapper = modelMapper;
+    }
 
     private Optional<EntityUser> getCurrentUserFromToken() {
         return serviceUser.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -88,7 +90,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/validateUsername")
+    @PostMapping(value = "/validateUsername")
     public ResponseEntity<Boolean> checkIfUsernameIsAvailable(@Valid @RequestBody NameDTO name) {
         if (serviceUser.getByUsername(name.getName()).isPresent()) {
             return ResponseEntity.ok().body(false);

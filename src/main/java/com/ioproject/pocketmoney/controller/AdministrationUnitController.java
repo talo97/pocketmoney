@@ -17,11 +17,14 @@ import java.util.List;
 @RequestMapping("/api")
 public class AdministrationUnitController {
 
-    @Autowired
-    private ServiceAdministrationUnit serviceAdministrationUnit;
+    private final ServiceAdministrationUnit serviceAdministrationUnit;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public AdministrationUnitController(ServiceAdministrationUnit serviceAdministrationUnit, ModelMapper modelMapper) {
+        this.serviceAdministrationUnit = serviceAdministrationUnit;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping("/getAdministrationUnits")
     public ResponseEntity<List<AdministrationUnitDTO>> getAllAdministrationUnits() {

@@ -20,8 +20,11 @@ import java.util.Optional;
 public class GroupController {
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
 
-    @Autowired
-    private ServiceGroup serviceGroup;
+    private final ServiceGroup serviceGroup;
+
+    public GroupController(ServiceGroup serviceGroup) {
+        this.serviceGroup = serviceGroup;
+    }
 
 
     @GetMapping("/groups")

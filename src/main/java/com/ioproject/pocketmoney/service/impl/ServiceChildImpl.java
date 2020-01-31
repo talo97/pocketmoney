@@ -20,18 +20,18 @@ import java.util.Optional;
 @Service
 public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, Long> implements ServiceChild {
 
-    @Autowired
-    private ServiceAdministrationUnit serviceAdministrationUnit;
+    private final ServiceAdministrationUnit serviceAdministrationUnit;
+
+    private final ServiceEducation serviceEducation;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ServiceEducation serviceEducation;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    public ServiceChildImpl(DaoChild repository) {
+    public ServiceChildImpl(DaoChild repository, ServiceAdministrationUnit serviceAdministrationUnit, ServiceEducation serviceEducation, ModelMapper modelMapper) {
         super(repository);
+        this.serviceAdministrationUnit = serviceAdministrationUnit;
+        this.serviceEducation = serviceEducation;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         //find edu lvl by name
         Optional<EntityEducation> education = serviceEducation.getByEducationLevel(dto.getEducationLevel());
         //if both of them exist then create entity with given user
-        if(administrationUnit.isPresent() &&education.isPresent()){
+        if (administrationUnit.isPresent() && education.isPresent()) {
             EntityChild toSave = modelMapper.map(dto, EntityChild.class);
             toSave.setAdministrationUnit(administrationUnit.get());
             toSave.setEducation(education.get());
@@ -55,5 +55,64 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     @Override
     public List<EntityChild> getAllByUser(EntityUser user) {
         return repository.getAllByUser(user);
+    }
+
+    @Override
+    public EntityChild updateChildByDTO(ChildPostDTO childPostDTO, EntityChild currentChild) {
+        if (childPostDTO.getAdministrationUnit() != null) {
+            Optional<EntityAdministrationUnit> administrationUnit = serviceAdministrationUnit.getByName(childPostDTO.getAdministrationUnit());
+            if (administrationUnit.isPresent()) {
+                currentChild.setAdministrationUnit(administrationUnit.get());
+            }
+        }
+        if (childPostDTO.getEducationLevel() != null) {
+            Optional<EntityEducation> entityEducation = serviceEducation.getByEducationLevel(childPostDTO.getEducationLevel());
+            if (entityEducation.isPresent()) {
+                currentChild.setEducation(entityEducation.get());
+            }
+        }
+        if (childPostDTO.getIsLivingWithParents() != null) {
+            currentChild.setLivingWithParents(childPostDTO.getIsLivingWithParents());
+        }
+        if (childPostDTO.getDescription() != null) {
+            currentChild.setDescription(childPostDTO.getDescription());
+        }
+        if (childPostDTO.getSex() != null) {
+            currentChild.setSex(childPostDTO.getSex());
+        }
+        if (childPostDTO.getPocketMoney() != null) {
+            childPostDTO.setPocketMoney(childPostDTO.getPocketMoney());
+        }
+        return repository.saveAndFlush(currentChild);
+    }
+
+    @Override
+    public Float calculateAverageMoneyForAdministrationUnit(EntityAdministrationUnit entityAdministrationUnit) {
+        int counter = 0;
+        Float averageValue = 0f;
+        List<EntityChild> children = repository.findAllByAdministrationUnit(entityAdministrationUnit);
+        // find if it is province and if it is then add all children from them
+        List<EntityAdministrationUnit> cities;
+        if (entityAdministrationUnit.getProvince() == null) {
+            cities = serviceAdministrationUnit.getAllByProvince(entityAdministrationUnit);
+            cities.forEach(entity -> {
+                children.addAll(repository.findAllByAdministrationUnit(entity));
+            });
+        }
+        for (EntityChild child : children) {
+            counter++;
+            averageValue += child.getPocketMoney();
+        }
+        return averageValue / counter;
+    }
+
+    @Override
+    public Float calculateAverageMoneyForAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation) {
+        float averageValue = 0f;
+        List<EntityChild> children = repository.findAllByAdministrationUnitAndEducation(entityAdministrationUnit, entityEducation);
+        for (EntityChild child : children) {
+            averageValue += child.getPocketMoney();
+        }
+        return averageValue;
     }
 }

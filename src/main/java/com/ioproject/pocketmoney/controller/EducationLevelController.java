@@ -18,11 +18,14 @@ import java.util.List;
 @RequestMapping("/api")
 public class EducationLevelController {
 
-    @Autowired
-    private ServiceEducation serviceEducation;
+    private final ServiceEducation serviceEducation;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public EducationLevelController(ServiceEducation serviceEducation, ModelMapper modelMapper) {
+        this.serviceEducation = serviceEducation;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping("/getEducationLevels")
     public ResponseEntity<List<EducationLevelDTO>> getAllEducationLevels(){
