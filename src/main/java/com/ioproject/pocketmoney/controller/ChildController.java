@@ -4,7 +4,6 @@ import com.ioproject.pocketmoney.entities.EntityChild;
 import com.ioproject.pocketmoney.entities.EntityUser;
 import com.ioproject.pocketmoney.entitiesDTO.EntityChildGetDTO;
 import com.ioproject.pocketmoney.entitiesDTO.EntityChildPostDTO;
-import com.ioproject.pocketmoney.entitiesDTO.EntityUserPostDTO;
 import com.ioproject.pocketmoney.service.ServiceChild;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
@@ -72,6 +71,16 @@ public class ChildController {
             return ResponseEntity.ok().body(mapListChildToGetDTO(lstChildren));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    //TODO::
+    @PutMapping("/editChild")
+    public ResponseEntity<?> editChild(EntityChildPostDTO child){
+        Optional<EntityUser> user = getCurrentUserFromToken();
+        if(user.isPresent()){
+
+        }
+        throw(new UnsupportedOperationException("keke reke na meke beke feke;"));
     }
 
     private List<EntityChildGetDTO> mapListChildToGetDTO(List<EntityChild> entityChild) {

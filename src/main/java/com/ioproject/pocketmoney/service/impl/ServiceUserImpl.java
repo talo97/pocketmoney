@@ -32,6 +32,11 @@ public class ServiceUserImpl extends CommonServiceImpl<EntityUser, DaoUser, Long
     }
 
     @Override
+    public Optional<EntityUser> getByEmail(String email) {
+        return this.repository.findByEmail(email);
+    }
+
+    @Override
     public Optional<EntityUser> saveUserByDTO(EntityUserPostDTO entityUserGetDTO) {
         //TODO:: maybe do it a bit better XD like take the value from some constant class or app proporties??, dunno for now imma leave it like that
         Optional<EntityGroup> group = serviceGroup.getByGroupName("DEFAULT");

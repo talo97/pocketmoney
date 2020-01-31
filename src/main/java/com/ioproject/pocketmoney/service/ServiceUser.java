@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface ServiceUser extends CommonService<EntityUser, Long> {
     Optional<EntityUser> getByUsername(String name);
+    Optional<EntityUser> getByEmail(String email);
     Optional<EntityUser> saveUserByDTO(EntityUserPostDTO entityUserGetDTO);
 }

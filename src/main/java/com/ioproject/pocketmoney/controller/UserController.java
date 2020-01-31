@@ -4,6 +4,7 @@ import com.ioproject.pocketmoney.entities.EntityUser;
 import com.ioproject.pocketmoney.entitiesDTO.EntityUserGetDTO;
 import com.ioproject.pocketmoney.entitiesDTO.EntityUserEditDTO;
 import com.ioproject.pocketmoney.entitiesDTO.EntityUserPostDTO;
+import com.ioproject.pocketmoney.entitiesDTO.NameDTO;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -43,7 +43,6 @@ public class UserController {
     }
 
     /**
-     *
      * @return currently logged in user
      */
     @GetMapping("/currentUser")
@@ -66,12 +65,14 @@ public class UserController {
      * @return added user
      */
     @PostMapping("/addUser")
-    public ResponseEntity<EntityUserPostDTO> createUser(@Valid @RequestBody EntityUserPostDTO user){
+    public ResponseEntity<EntityUserPostDTO> createUser(@Valid @RequestBody EntityUserPostDTO user) {
         log.info("Request to create user: {}", user);
         if (user.containsEmptyValue()) {
             return ResponseEntity.badRequest().build();
         }
-        Optional<EntityUser> result = serviceUser.saveUserByDTO(user);
+        Optional<EntityUser> result;
+        result = serviceUser.saveUserByDTO(user);
+
         return result.map(response -> ResponseEntity.ok().body(modelMapper.map(response, EntityUserPostDTO.class)))
                 .orElse(ResponseEntity.badRequest().build());
     }
@@ -85,6 +86,24 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/validateUsername")
+    public ResponseEntity<Boolean> checkIfUsernameIsAvailable(@Valid @RequestBody NameDTO name) {
+        if (serviceUser.getByUsername(name.getName()).isPresent()) {
+            return ResponseEntity.ok().body(false);
+        } else {
+            return ResponseEntity.ok().body(true);
+        }
+    }
+
+    @PostMapping("/validateEmail")
+    public ResponseEntity<Boolean> checkIfEmailIsAvailable(@Valid @RequestBody NameDTO name) {
+        if (serviceUser.getByEmail(name.getName()).isPresent()) {
+            return ResponseEntity.ok().body(false);
+        } else {
+            return ResponseEntity.ok().body(true);
+        }
     }
 
     @PutMapping("/editCurrentUser")
@@ -103,6 +122,7 @@ public class UserController {
             }
             //save to DB
             serviceUser.update(currentUser.get());
+
             Optional<EntityUserGetDTO> currentUserDTO;
             currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), EntityUserGetDTO.class));
             currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
