@@ -2,7 +2,7 @@ package com.ioproject.pocketmoney.entitiesDTO;
 
 import java.io.Serializable;
 
-public class JwtRequest implements Serializable {
+public class JwtRequestDTO implements Serializable {
 
     private static final long serialVersionUID = 5926468583005150707L;
 
@@ -10,12 +10,12 @@ public class JwtRequest implements Serializable {
     private String password;
 
     //need default constructor for JSON Parsing
-    public JwtRequest()
+    public JwtRequestDTO()
     {
 
     }
 
-    public JwtRequest(String username, String password) {
+    public JwtRequestDTO(String username, String password) {
         this.setUsername(username);
         this.setPassword(password);
     }

@@ -2,8 +2,8 @@ package com.ioproject.pocketmoney.controller;
 
 import com.ioproject.pocketmoney.entities.EntityChild;
 import com.ioproject.pocketmoney.entities.EntityUser;
-import com.ioproject.pocketmoney.entitiesDTO.EntityChildGetDTO;
-import com.ioproject.pocketmoney.entitiesDTO.EntityChildPostDTO;
+import com.ioproject.pocketmoney.entitiesDTO.ChildGetDTO;
+import com.ioproject.pocketmoney.entitiesDTO.ChildPostDTO;
 import com.ioproject.pocketmoney.service.ServiceChild;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
@@ -41,13 +41,13 @@ public class ChildController {
      * @return given child record if correct values
      */
     @PostMapping("/addChild")
-    public ResponseEntity<EntityChildGetDTO> addChild(@Valid @RequestBody EntityChildPostDTO child) {
+    public ResponseEntity<ChildGetDTO> addChild(@Valid @RequestBody ChildPostDTO child) {
         Optional<EntityUser> user = getCurrentUserFromToken();
         //should always return current user or just not allowed to get this mapping but just to be sure:d + check if all
         //required child data are present in JSON
         if (!child.doesntContainAllRequiredValues() && user.isPresent()) {
             Optional<EntityChild> result = serviceChild.saveChildByPostDTO(child, user.get());
-            EntityChildGetDTO toReturn = modelMapper.map(child, EntityChildGetDTO.class);
+            ChildGetDTO toReturn = modelMapper.map(child, ChildGetDTO.class);
             //TODO:: dunno if it is required (username and id)
             toReturn.setUser(user.get().getUsername());
             toReturn.setUserId(user.get().getId());
@@ -64,7 +64,7 @@ public class ChildController {
      * @return list of current user kids
      */
     @GetMapping("/getMyChildren")
-    public ResponseEntity<List<EntityChildGetDTO>> getOwnChildren() {
+    public ResponseEntity<List<ChildGetDTO>> getOwnChildren() {
         Optional<EntityUser> user = getCurrentUserFromToken();
         if (user.isPresent()) {
             List<EntityChild> lstChildren = serviceChild.getAllByUser(user.get());
@@ -75,7 +75,7 @@ public class ChildController {
 
     //TODO::
     @PutMapping("/editChild")
-    public ResponseEntity<?> editChild(EntityChildPostDTO child){
+    public ResponseEntity<?> editChild(ChildPostDTO child){
         Optional<EntityUser> user = getCurrentUserFromToken();
         if(user.isPresent()){
 
@@ -83,10 +83,10 @@ public class ChildController {
         throw(new UnsupportedOperationException("keke reke na meke beke feke;"));
     }
 
-    private List<EntityChildGetDTO> mapListChildToGetDTO(List<EntityChild> entityChild) {
-        List<EntityChildGetDTO> toReturn = new ArrayList<>();
+    private List<ChildGetDTO> mapListChildToGetDTO(List<EntityChild> entityChild) {
+        List<ChildGetDTO> toReturn = new ArrayList<>();
         //yee Ik it is not really clean XD but gotta go fast XD
-        entityChild.forEach(child -> toReturn.add(new EntityChildGetDTO(child.getId(), child.getUser().getId(), child.getUser().getUsername(),
+        entityChild.forEach(child -> toReturn.add(new ChildGetDTO(child.getId(), child.getUser().getId(), child.getUser().getUsername(),
                 child.getPocketMoney(), child.getDescription(), child.getSex(), child.isLivingWithParents(),
                 child.getAdministrationUnit().getName(), child.getEducation().getEducationLevel())));
         return toReturn;

@@ -1,7 +1,7 @@
 package com.ioproject.pocketmoney.controller;
 
-import com.ioproject.pocketmoney.entitiesDTO.JwtRequest;
-import com.ioproject.pocketmoney.entitiesDTO.JwtResponse;
+import com.ioproject.pocketmoney.entitiesDTO.JwtRequestDTO;
+import com.ioproject.pocketmoney.entitiesDTO.JwtResponseDTO;
 import com.ioproject.pocketmoney.secuityJWT.JwtTokenUtil;
 import com.ioproject.pocketmoney.secuityJWT.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class JwtAuthenticationController {
      * @throws Exception disabled/invalid credentials
      */
     @PostMapping(value = "/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestDTO authenticationRequest) throws Exception {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
@@ -44,7 +44,7 @@ public class JwtAuthenticationController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JwtResponseDTO(token));
     }
 
     private void authenticate(String username, String password) throws Exception {

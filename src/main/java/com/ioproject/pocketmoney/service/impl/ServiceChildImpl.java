@@ -6,7 +6,7 @@ import com.ioproject.pocketmoney.entities.EntityAdministrationUnit;
 import com.ioproject.pocketmoney.entities.EntityChild;
 import com.ioproject.pocketmoney.entities.EntityEducation;
 import com.ioproject.pocketmoney.entities.EntityUser;
-import com.ioproject.pocketmoney.entitiesDTO.EntityChildPostDTO;
+import com.ioproject.pocketmoney.entitiesDTO.ChildPostDTO;
 import com.ioproject.pocketmoney.service.ServiceAdministrationUnit;
 import com.ioproject.pocketmoney.service.ServiceChild;
 import com.ioproject.pocketmoney.service.ServiceEducation;
@@ -35,7 +35,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     }
 
     @Override
-    public Optional<EntityChild> saveChildByPostDTO(EntityChildPostDTO dto, EntityUser currentUser) {
+    public Optional<EntityChild> saveChildByPostDTO(ChildPostDTO dto, EntityUser currentUser) {
         //find adm unit by name
         Optional<EntityAdministrationUnit> administrationUnit = serviceAdministrationUnit.getByName(dto.getAdministrationUnit());
         //find edu lvl by name

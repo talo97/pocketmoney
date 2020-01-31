@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class EntityUserEditDTO {
+public class UserEditDTO {
 
     private String password;
 

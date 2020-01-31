@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class EntityUserGetDTO {
+public class UserGetDTO {
 
     private String username;
 

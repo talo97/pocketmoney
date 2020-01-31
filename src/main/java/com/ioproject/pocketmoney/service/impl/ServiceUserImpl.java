@@ -4,7 +4,7 @@ import com.ioproject.pocketmoney.common.CommonServiceImpl;
 import com.ioproject.pocketmoney.dao.DaoUser;
 import com.ioproject.pocketmoney.entities.EntityGroup;
 import com.ioproject.pocketmoney.entities.EntityUser;
-import com.ioproject.pocketmoney.entitiesDTO.EntityUserPostDTO;
+import com.ioproject.pocketmoney.entitiesDTO.UserPostDTO;
 import com.ioproject.pocketmoney.service.ServiceGroup;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
@@ -37,7 +37,7 @@ public class ServiceUserImpl extends CommonServiceImpl<EntityUser, DaoUser, Long
     }
 
     @Override
-    public Optional<EntityUser> saveUserByDTO(EntityUserPostDTO entityUserGetDTO) {
+    public Optional<EntityUser> saveUserByDTO(UserPostDTO entityUserGetDTO) {
         //TODO:: maybe do it a bit better XD like take the value from some constant class or app proporties??, dunno for now imma leave it like that
         Optional<EntityGroup> group = serviceGroup.getByGroupName("DEFAULT");
         Optional<EntityUser> user = Optional.empty();

@@ -1,9 +1,9 @@
 package com.ioproject.pocketmoney.controller;
 
 import com.ioproject.pocketmoney.entities.EntityUser;
-import com.ioproject.pocketmoney.entitiesDTO.EntityUserGetDTO;
-import com.ioproject.pocketmoney.entitiesDTO.EntityUserEditDTO;
-import com.ioproject.pocketmoney.entitiesDTO.EntityUserPostDTO;
+import com.ioproject.pocketmoney.entitiesDTO.UserGetDTO;
+import com.ioproject.pocketmoney.entitiesDTO.UserEditDTO;
+import com.ioproject.pocketmoney.entitiesDTO.UserPostDTO;
 import com.ioproject.pocketmoney.entitiesDTO.NameDTO;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
@@ -46,12 +46,12 @@ public class UserController {
      * @return currently logged in user
      */
     @GetMapping("/currentUser")
-    public ResponseEntity<EntityUserGetDTO> getCurrentUser() {
+    public ResponseEntity<UserGetDTO> getCurrentUser() {
         log.info("Request to get current user");
         Optional<EntityUser> currentUser = getCurrentUserFromToken();
-        Optional<EntityUserGetDTO> currentUserDTO = Optional.empty();
+        Optional<UserGetDTO> currentUserDTO = Optional.empty();
         if (currentUser.isPresent()) {
-            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), EntityUserGetDTO.class));
+            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), UserGetDTO.class));
             currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
         }
         return currentUserDTO.map(response -> ResponseEntity.ok().body(response))
@@ -65,7 +65,7 @@ public class UserController {
      * @return added user
      */
     @PostMapping("/addUser")
-    public ResponseEntity<EntityUserPostDTO> createUser(@Valid @RequestBody EntityUserPostDTO user) {
+    public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO user) {
         log.info("Request to create user: {}", user);
         if (user.containsEmptyValue()) {
             return ResponseEntity.badRequest().build();
@@ -73,7 +73,7 @@ public class UserController {
         Optional<EntityUser> result;
         result = serviceUser.saveUserByDTO(user);
 
-        return result.map(response -> ResponseEntity.ok().body(modelMapper.map(response, EntityUserPostDTO.class)))
+        return result.map(response -> ResponseEntity.ok().body(modelMapper.map(response, UserPostDTO.class)))
                 .orElse(ResponseEntity.badRequest().build());
     }
 
@@ -107,7 +107,7 @@ public class UserController {
     }
 
     @PutMapping("/editCurrentUser")
-    public ResponseEntity<EntityUserGetDTO> updateCurrentUser(@Valid @RequestBody EntityUserEditDTO userEdit) {
+    public ResponseEntity<UserGetDTO> updateCurrentUser(@Valid @RequestBody UserEditDTO userEdit) {
         log.info("Request to update current user: {}", userEdit);
         Optional<EntityUser> currentUser = getCurrentUserFromToken();
         if (currentUser.isPresent()) {
@@ -123,8 +123,8 @@ public class UserController {
             //save to DB
             serviceUser.update(currentUser.get());
 
-            Optional<EntityUserGetDTO> currentUserDTO;
-            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), EntityUserGetDTO.class));
+            Optional<UserGetDTO> currentUserDTO;
+            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), UserGetDTO.class));
             currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
             return currentUserDTO.map(response -> ResponseEntity.ok().body(response))
                     .orElse(ResponseEntity.badRequest().build());

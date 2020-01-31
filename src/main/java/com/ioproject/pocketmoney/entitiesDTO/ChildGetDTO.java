@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntityChildGetDTO {
+public class ChildGetDTO {
     private Long id;
     private Long userId;
     private String user;

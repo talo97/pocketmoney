@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class EntityChildPostDTO {
+public class ChildPostDTO {
     private Float pocketMoney;
     private String description = "";
     private String sex;
