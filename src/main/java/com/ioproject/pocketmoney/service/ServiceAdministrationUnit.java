@@ -2,7 +2,6 @@ package com.ioproject.pocketmoney.service;
 
 import com.ioproject.pocketmoney.common.CommonService;
 import com.ioproject.pocketmoney.entities.EntityAdministrationUnit;
-import com.ioproject.pocketmoney.entities.EntityUser;
 
 import java.util.List;
 import java.util.Optional;

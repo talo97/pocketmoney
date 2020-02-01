@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +55,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
 
     @Override
     public List<EntityChild> getAllByUser(EntityUser user) {
-        return repository.getAllByUser(user);
+        return repository.findAllByUser(user);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
             currentChild.setSex(childPostDTO.getSex());
         }
         if (childPostDTO.getPocketMoney() != null) {
-            childPostDTO.setPocketMoney(childPostDTO.getPocketMoney());
+            currentChild.setPocketMoney(childPostDTO.getPocketMoney());
         }
         return repository.saveAndFlush(currentChild);
     }
@@ -88,27 +89,55 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         Float averageValue = 0f;
         List<EntityChild> children = repository.findAllByAdministrationUnit(entityAdministrationUnit);
         // find if it is province and if it is then add all children from them
-        List<EntityAdministrationUnit> cities;
         if (entityAdministrationUnit.getProvince() == null) {
-            cities = serviceAdministrationUnit.getAllByProvince(entityAdministrationUnit);
-            cities.forEach(entity -> {
-                children.addAll(repository.findAllByAdministrationUnit(entity));
-            });
+            List<EntityAdministrationUnit> cities = serviceAdministrationUnit.getAllByProvince(entityAdministrationUnit);
+            cities.forEach(entity -> children.addAll(repository.findAllByAdministrationUnit(entity)));
         }
         for (EntityChild child : children) {
             counter++;
             averageValue += child.getPocketMoney();
         }
+        if (counter == 0) return averageValue;
         return averageValue / counter;
     }
 
     @Override
     public Float calculateAverageMoneyForAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation) {
         float averageValue = 0f;
+        int counter = 0;
         List<EntityChild> children = repository.findAllByAdministrationUnitAndEducation(entityAdministrationUnit, entityEducation);
+        if (entityAdministrationUnit.getProvince() == null) {
+            List<EntityAdministrationUnit> cities = serviceAdministrationUnit.getAllByProvince(entityAdministrationUnit);
+            cities.forEach(entity -> children.addAll(repository.findAllByAdministrationUnitAndEducation(entity, entityEducation)));
+        }
         for (EntityChild child : children) {
+            counter++;
             averageValue += child.getPocketMoney();
         }
-        return averageValue;
+        if (counter == 0) return averageValue;
+        return averageValue / counter;
+    }
+
+    @Override
+    public Float calculateAverageMoneyForEducationLvl(EntityEducation entityEducation) {
+        float averageValue = 0f;
+        int counter = 0;
+        List<EntityChild> children = repository.findAllByEducation(entityEducation);
+        for (EntityChild child : children) {
+            counter++;
+            averageValue += child.getPocketMoney();
+        }
+        if (counter == 0) return averageValue;
+        return averageValue / counter;
+    }
+
+    @Override
+    public List<EntityChild> getAllByAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation) {
+        List<EntityChild> children = repository.findAllByAdministrationUnitAndEducation(entityAdministrationUnit, entityEducation);
+        if (entityAdministrationUnit.getProvince() == null) {
+            List<EntityAdministrationUnit> cities = serviceAdministrationUnit.getAllByProvince(entityAdministrationUnit);
+            cities.forEach(entity -> children.addAll(repository.findAllByAdministrationUnitAndEducation(entity, entityEducation)));
+        }
+        return children;
     }
 }

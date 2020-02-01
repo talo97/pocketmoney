@@ -14,7 +14,7 @@ import java.util.Random;
 
 //to add first records to database implement CommandLineRunner interface and uncomment function run()
 @SpringBootApplication
-public class PocketMoneyApplication{
+public class PocketMoneyApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PocketMoneyApplication.class, args);
@@ -138,22 +138,22 @@ public class PocketMoneyApplication{
 //
 //        //add for one kid for each user
 //        EntityChild childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("vaniat").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("vaniat").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //        childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("charizard").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("charizard").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //        childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("dawur").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("dawur").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //        childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("IMPIOUS_DEVIOUS_LEPER_LORD").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("IMPIOUS_DEVIOUS_LEPER_LORD").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //        childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("MagicTurtle").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("MagicTurtle").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //        childoooo = new EntityChild(10f, "nofajnie", "male",
-//                false, admUnits.get(11), serviceUser.getByUsername("Nieznany").get(), educations.get(1));
+//                false, admUnits.get(27), serviceUser.getByUsername("Nieznany").get(), educations.get(1));
 //        serviceChild.save(childoooo);
 //    }
 

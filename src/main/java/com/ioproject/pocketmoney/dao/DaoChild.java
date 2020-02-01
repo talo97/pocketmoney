@@ -11,7 +11,8 @@ import java.util.List;
 
 @Repository
 public interface DaoChild extends JpaRepository<EntityChild, Long> {
-    List<EntityChild> getAllByUser(EntityUser user);
+    List<EntityChild> findAllByUser(EntityUser user);
     List<EntityChild> findAllByAdministrationUnit(EntityAdministrationUnit entityAdministrationUnit);
     List<EntityChild> findAllByAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
+    List<EntityChild> findAllByEducation(EntityEducation entityEducation);
 }

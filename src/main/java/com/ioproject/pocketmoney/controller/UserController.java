@@ -72,6 +72,7 @@ public class UserController {
         if (user.containsEmptyValue()) {
             return ResponseEntity.badRequest().build();
         }
+
         Optional<EntityUser> result;
         result = serviceUser.saveUserByDTO(user);
 
@@ -97,6 +98,12 @@ public class UserController {
         } else {
             return ResponseEntity.ok().body(true);
         }
+    }
+    public boolean checkIfUsernameIsAvailable(String username){
+        return !serviceUser.getByUsername(username).isPresent();
+    }
+    public boolean checkIfEmailIsAvailable(String email){
+        return !serviceUser.getByEmail(email).isPresent();
     }
 
     @PostMapping("/validateEmail")

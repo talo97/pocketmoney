@@ -2,15 +2,16 @@ package com.ioproject.pocketmoney.controller;
 
 import com.ioproject.pocketmoney.entities.EntityAdministrationUnit;
 import com.ioproject.pocketmoney.entities.EntityChild;
+import com.ioproject.pocketmoney.entities.EntityEducation;
 import com.ioproject.pocketmoney.entities.EntityUser;
-import com.ioproject.pocketmoney.entitiesDTO.AdmUnitAvgMoneyDTO;
+import com.ioproject.pocketmoney.entitiesDTO.NameFloatForTableDTO;
 import com.ioproject.pocketmoney.entitiesDTO.ChildGetDTO;
 import com.ioproject.pocketmoney.entitiesDTO.ChildPostDTO;
 import com.ioproject.pocketmoney.service.ServiceAdministrationUnit;
 import com.ioproject.pocketmoney.service.ServiceChild;
+import com.ioproject.pocketmoney.service.ServiceEducation;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +32,14 @@ public class ChildController {
     private final ServiceChild serviceChild;
 
     private final ServiceAdministrationUnit serviceAdministrationUnit;
+    private final ServiceEducation serviceEducation;
 
-    public ChildController(ServiceUser serviceUser, ModelMapper modelMapper, ServiceChild serviceChild, ServiceAdministrationUnit serviceAdministrationUnit) {
+    public ChildController(ServiceUser serviceUser, ModelMapper modelMapper, ServiceChild serviceChild, ServiceAdministrationUnit serviceAdministrationUnit, ServiceEducation serviceEducation) {
         this.serviceUser = serviceUser;
         this.modelMapper = modelMapper;
         this.serviceChild = serviceChild;
         this.serviceAdministrationUnit = serviceAdministrationUnit;
+        this.serviceEducation = serviceEducation;
     }
 
     private Optional<EntityUser> getCurrentUserFromToken() {
@@ -92,14 +95,14 @@ public class ChildController {
      * @return all changed values
      */
     @PutMapping("/editChild/{id}")
-    public ResponseEntity<ChildPostDTO> editChild(@Valid @RequestBody ChildPostDTO childPostDTO, @PathVariable Long id) {
+    public ResponseEntity<?> editChild(@Valid @RequestBody ChildPostDTO childPostDTO, @PathVariable Long id) {
         Optional<EntityUser> user = getCurrentUserFromToken();
         if (user.isPresent()) {
             Optional<EntityChild> currentChild = serviceChild.get(id);
             //it exist and current user is owner of the record
             if (currentChild.isPresent() && currentChild.get().getUser().getId().equals(user.get().getId())) {
                 this.serviceChild.updateChildByDTO(childPostDTO, currentChild.get());
-                return ResponseEntity.ok().body(childPostDTO);
+                return ResponseEntity.ok().body("OK child has been edited");
             }
         }
         return ResponseEntity.badRequest().build();
@@ -114,24 +117,77 @@ public class ChildController {
         return toReturn;
     }
 
+    /**
+     * @return all children records
+     */
     @GetMapping("/getAllChildren")
     public ResponseEntity<List<ChildGetDTO>> getAllChildren() {
         return ResponseEntity.ok().body(mapListChildToGetDTO(this.serviceChild.getAll()));
     }
 
-    @GetMapping("/getAverageMoneyAdministrationUnit")
-    public ResponseEntity<List<AdmUnitAvgMoneyDTO>> getAverageMoneyAdmUnit() {
+    /**
+     * Call method to get average child pocket money for each city/province
+     *
+     * @return json with name(city/province name), value(average pocket money for city)
+     */
+    @GetMapping("/getStatisticsAverage")
+    public ResponseEntity<List<NameFloatForTableDTO>> getStatisticsAverage() {
         List<EntityAdministrationUnit> administrationUnits = serviceAdministrationUnit.getAll();
-        List<AdmUnitAvgMoneyDTO> lstToReturn = new ArrayList<>();
-        administrationUnits.forEach(entityAdministrationUnit -> {
-            lstToReturn.add(new AdmUnitAvgMoneyDTO(entityAdministrationUnit.getName(), serviceChild.calculateAverageMoneyForAdministrationUnit(entityAdministrationUnit)));
-        });
+        List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
+        administrationUnits.forEach(entityAdministrationUnit -> lstToReturn.add(new NameFloatForTableDTO(entityAdministrationUnit.getName(),
+                serviceChild.calculateAverageMoneyForAdministrationUnit(entityAdministrationUnit))));
+        return ResponseEntity.ok().body(lstToReturn);
+    }
+
+    /**
+     * Call method to get average child pocket money for each education level and given city/province
+     *
+     * @param administrationUnit city/province
+     * @return json with name(education lvl), value(average pocket money for given citya and education lvl)
+     */
+    @GetMapping("/getStatisticsAverage/{administrationUnit}")
+    public ResponseEntity<List<NameFloatForTableDTO>> getStatisticsAverage(@PathVariable String administrationUnit) {
+        List<EntityEducation> educations = serviceEducation.getAll();
+        List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
+        Optional<EntityAdministrationUnit> entityAdministrationUnit = serviceAdministrationUnit.getByName(administrationUnit);
+        entityAdministrationUnit.ifPresent(e -> educations.forEach(entityEducation -> lstToReturn.add(new NameFloatForTableDTO(entityEducation.getEducationLevel(),
+                serviceChild.calculateAverageMoneyForAdministrationUnitAndEducation(e, entityEducation)))));
+        return ResponseEntity.ok().body(lstToReturn);
+    }
+
+    /**
+     * Call method to get specific children data for given parameters
+     *
+     * @param administrationUnit city/province
+     * @param educationLevel     education name
+     * @return all child records for given city and education lvl
+     */
+    @GetMapping("/getStatisticsAverage/{administrationUnit}/{educationLevel}")
+    public ResponseEntity<List<ChildGetDTO>> getStatisticsAverage(@PathVariable String administrationUnit, @PathVariable String educationLevel) {
+        Optional<EntityAdministrationUnit> optionalEntityAdministrationUnit = serviceAdministrationUnit.getByName(administrationUnit);
+        Optional<EntityEducation> optionalEntityEducation = serviceEducation.getByEducationLevel(educationLevel);
+        List<EntityChild> entityChildren = new ArrayList<>();
+        optionalEntityAdministrationUnit.ifPresent(entityAdministrationUnit -> optionalEntityEducation.ifPresent(entityEducation -> entityChildren.addAll(
+                serviceChild.getAllByAdministrationUnitAndEducation(entityAdministrationUnit, entityEducation))));
+        return ResponseEntity.ok().body(mapListChildToGetDTO(entityChildren));
+    }
+
+    /**
+     * Call method to get average child pocket money for each education level
+     *
+     * @return json with name(education lvl), value(average pocket money for given education lvl)
+     */
+    @GetMapping("/getStatisticAverageEducationLvl")
+    public ResponseEntity<List<NameFloatForTableDTO>> getAverageMoneyEduLvl() {
+        List<EntityEducation> educations = serviceEducation.getAll();
+        List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
+        educations.forEach(entityEducation -> lstToReturn.add(new NameFloatForTableDTO(entityEducation.getEducationLevel(), serviceChild.calculateAverageMoneyForEducationLvl(entityEducation))));
         return ResponseEntity.ok().body(lstToReturn);
     }
 
 
     //TODO::
-    // add endpoints for: avg pocket money for edu lvl in city, list of all kids for choosen city and edu lvl
+    // add endpoints for: list of all kids for choosen city and edu lvl
 
 
 }

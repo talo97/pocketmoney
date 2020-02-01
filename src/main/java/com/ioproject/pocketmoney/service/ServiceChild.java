@@ -7,6 +7,7 @@ import com.ioproject.pocketmoney.entities.EntityEducation;
 import com.ioproject.pocketmoney.entities.EntityUser;
 import com.ioproject.pocketmoney.entitiesDTO.ChildPostDTO;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,7 @@ public interface ServiceChild extends CommonService<EntityChild, Long> {
 
     Float calculateAverageMoneyForAdministrationUnit(EntityAdministrationUnit entityAdministrationUnit);
     Float calculateAverageMoneyForAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
+    Float calculateAverageMoneyForEducationLvl(EntityEducation entityEducation);
+
+    List<EntityChild> getAllByAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
 }

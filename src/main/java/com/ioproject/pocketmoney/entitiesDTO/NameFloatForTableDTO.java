@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdmUnitAvgMoneyDTO {
-    private String administrationUnit;
-    private Float averageMoney = 0f;
+public class NameFloatForTableDTO {
+    private String name;
+    private Float value = 0f;
 }
