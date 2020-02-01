@@ -61,15 +61,11 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     public EntityChild updateChildByDTO(ChildPostDTO childPostDTO, EntityChild currentChild) {
         if (childPostDTO.getAdministrationUnit() != null) {
             Optional<EntityAdministrationUnit> administrationUnit = serviceAdministrationUnit.getByName(childPostDTO.getAdministrationUnit());
-            if (administrationUnit.isPresent()) {
-                currentChild.setAdministrationUnit(administrationUnit.get());
-            }
+            administrationUnit.ifPresent(currentChild::setAdministrationUnit);
         }
         if (childPostDTO.getEducationLevel() != null) {
             Optional<EntityEducation> entityEducation = serviceEducation.getByEducationLevel(childPostDTO.getEducationLevel());
-            if (entityEducation.isPresent()) {
-                currentChild.setEducation(entityEducation.get());
-            }
+            entityEducation.ifPresent(currentChild::setEducation);
         }
         if (childPostDTO.getIsLivingWithParents() != null) {
             currentChild.setLivingWithParents(childPostDTO.getIsLivingWithParents());

@@ -110,7 +110,7 @@ public class PocketMoneyApplication{
 //        Random rand = new Random();
 //        int boundEducation = 6; //this many school types
 //        int boundAdmUnit = 28; //this many province/big cities records
-//        int boundPocketMoney = 500;
+//        int boundPocketMoney = 100;
 //        for (int i = 0; i < 200; i++) {
 //            EntityChild child = new EntityChild((float) rand.nextInt(boundPocketMoney), "", "male",
 //                    true, admUnits.get(rand.nextInt(boundAdmUnit)), user,
