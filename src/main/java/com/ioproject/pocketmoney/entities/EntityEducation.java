@@ -1,7 +1,9 @@
 package com.ioproject.pocketmoney.entities;
 
 import com.ioproject.pocketmoney.common.CommonEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -12,6 +14,8 @@ import javax.persistence.Table;
 @Table(name = "education")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EntityEducation extends CommonEntity {
 
     //bedzie prosciej XD

@@ -1,7 +1,9 @@
 package com.ioproject.pocketmoney.entities;
 
 import com.ioproject.pocketmoney.common.CommonEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Table(name = "child")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EntityChild extends CommonEntity {
 
     @Column(name = "pocket_money_value")
