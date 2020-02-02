@@ -17,6 +17,7 @@ import java.util.Optional;
 //a lot of not needed functionality (was used only for testing purposes)
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class GroupController {
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
 

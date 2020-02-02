@@ -20,6 +20,9 @@ public class PocketMoneyApplication {
         SpringApplication.run(PocketMoneyApplication.class, args);
     }
 
+    //TODO::
+    // delete user
+    // delete child
 
 //    //uncomment if you want to add default values
 //    @Autowired
@@ -157,10 +160,4 @@ public class PocketMoneyApplication {
 //        serviceChild.save(childoooo);
 //    }
 
-    //TODO::
-    //WEB security (w miare zrobione, testy itp.)
-    //ogarnac REST z foreign key - rozwiazana za pomoca Data Access Object (DTO)
-    //kontrolki do child wszystkie do zrobienia
-    //przygotowac gotowca do mysql (jakis skrypcik zeby zapelnic adm_unit/school/groups)
-    //w sumie api bedzie zarzadzac tylko user i child wiec spoko xd
 }
