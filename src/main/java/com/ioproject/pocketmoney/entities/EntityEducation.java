@@ -22,6 +22,6 @@ public class EntityEducation extends CommonEntity {
 //    @Column(name = "year")
 //    private Integer educationYear;
 
-    @Column(name = "level")
+    @Column(name = "level", unique = true)
     private String educationLevel;
 }

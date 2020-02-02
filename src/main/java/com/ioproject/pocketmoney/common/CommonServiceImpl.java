@@ -1,12 +1,13 @@
 package com.ioproject.pocketmoney.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class CommonServiceImpl<E extends CommonEntity, R extends JpaRepository<E,K>, K extends Serializable> implements CommonService<E, K> {
+public abstract class CommonServiceImpl<E extends CommonEntity, R extends JpaRepository<E,K>, K extends Serializable> implements CommonService<E, K> {
 
     protected R repository;
 

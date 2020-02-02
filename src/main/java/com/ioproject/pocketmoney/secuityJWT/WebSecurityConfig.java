@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO:: all security stuff
         //TODO:: DELETE /api/group from permitAll matcher!!!!!!!!!!!!!!!
         http.csrf().disable() //BARDZO NIEDOBRE XD potem poczytac i zmienic albo sie nie przyznawac XD
-                .authorizeRequests().antMatchers("/api/authenticate", "/api/addUser", "/api/group").permitAll()
+                .authorizeRequests().antMatchers("/api/authenticate", "/api/addUser", "/api/groups").permitAll()
                 .antMatchers("/admin", "/api/users", "/deleteUser/user/{id}").hasRole("ADMIN")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()

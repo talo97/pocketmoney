@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @MappedSuperclass
 @Getter
-public class CommonEntity {
+public abstract class CommonEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

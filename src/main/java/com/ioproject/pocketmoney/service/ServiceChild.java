@@ -16,9 +16,10 @@ public interface ServiceChild extends CommonService<EntityChild, Long> {
     List<EntityChild> getAllByUser(EntityUser user);
     EntityChild updateChildByDTO(ChildPostDTO childPostDTO, EntityChild currentChild);
 
-    Float calculateAverageMoneyForAdministrationUnit(EntityAdministrationUnit entityAdministrationUnit);
-    Float calculateAverageMoneyForAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
-    Float calculateAverageMoneyForEducationLvl(EntityEducation entityEducation);
+    Float calculateAverageMoney();
+    Float calculateAverageMoney(EntityAdministrationUnit entityAdministrationUnit);
+    Float calculateAverageMoney(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
+    Float calculateAverageMoney(EntityEducation entityEducation);
 
     List<EntityChild> getAllByAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
 }

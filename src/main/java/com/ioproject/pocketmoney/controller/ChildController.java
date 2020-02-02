@@ -126,6 +126,16 @@ public class ChildController {
     }
 
     /**
+     * Call method to get average child pocket money for all records
+     *
+     * @return average money for all child records
+     */
+    @GetMapping("/getAveragePocketMoney")
+    public ResponseEntity<Float> getAveragePocketMoney(){
+        return ResponseEntity.ok().body(serviceChild.calculateAverageMoney());
+    }
+
+    /**
      * Call method to get average child pocket money for each city/province
      *
      * @return json with name(city/province name), value(average pocket money for city)
@@ -135,7 +145,7 @@ public class ChildController {
         List<EntityAdministrationUnit> administrationUnits = serviceAdministrationUnit.getAll();
         List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
         administrationUnits.forEach(entityAdministrationUnit -> lstToReturn.add(new NameFloatForTableDTO(entityAdministrationUnit.getName(),
-                serviceChild.calculateAverageMoneyForAdministrationUnit(entityAdministrationUnit))));
+                serviceChild.calculateAverageMoney(entityAdministrationUnit))));
         return ResponseEntity.ok().body(lstToReturn);
     }
 
@@ -151,7 +161,7 @@ public class ChildController {
         List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
         Optional<EntityAdministrationUnit> entityAdministrationUnit = serviceAdministrationUnit.getByName(administrationUnit);
         entityAdministrationUnit.ifPresent(e -> educations.forEach(entityEducation -> lstToReturn.add(new NameFloatForTableDTO(entityEducation.getEducationLevel(),
-                serviceChild.calculateAverageMoneyForAdministrationUnitAndEducation(e, entityEducation)))));
+                serviceChild.calculateAverageMoney(e, entityEducation)))));
         return ResponseEntity.ok().body(lstToReturn);
     }
 
@@ -181,13 +191,13 @@ public class ChildController {
     public ResponseEntity<List<NameFloatForTableDTO>> getAverageMoneyEduLvl() {
         List<EntityEducation> educations = serviceEducation.getAll();
         List<NameFloatForTableDTO> lstToReturn = new ArrayList<>();
-        educations.forEach(entityEducation -> lstToReturn.add(new NameFloatForTableDTO(entityEducation.getEducationLevel(), serviceChild.calculateAverageMoneyForEducationLvl(entityEducation))));
+        educations.forEach(entityEducation -> lstToReturn.add(new NameFloatForTableDTO(entityEducation.getEducationLevel(), serviceChild.calculateAverageMoney(entityEducation))));
         return ResponseEntity.ok().body(lstToReturn);
     }
 
 
     //TODO::
-    // add endpoints for: list of all kids for choosen city and edu lvl
+    // add endpoints for: deleting child
 
 
 }

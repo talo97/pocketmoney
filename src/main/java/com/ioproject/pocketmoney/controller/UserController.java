@@ -69,10 +69,9 @@ public class UserController {
     @PostMapping("/addUser")
     public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO user) {
         log.info("Request to create user: {}", user);
-        if (user.containsEmptyValue()) {
+        if (user.containsEmptyValue()|| !checkIfEmailIsAvailable(user.getEmail()) || !checkIfUsernameIsAvailable(user.getUsername())) {
             return ResponseEntity.badRequest().build();
         }
-
         Optional<EntityUser> result;
         result = serviceUser.saveUserByDTO(user);
 

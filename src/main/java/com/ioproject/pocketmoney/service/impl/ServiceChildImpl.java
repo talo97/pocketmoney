@@ -84,7 +84,20 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     }
 
     @Override
-    public Float calculateAverageMoneyForAdministrationUnit(EntityAdministrationUnit entityAdministrationUnit) {
+    public Float calculateAverageMoney() {
+        List<EntityChild> children = repository.findAll();
+        int counter = 0;
+        Float averageValue = 0f;
+        for (EntityChild child : children) {
+            counter++;
+            averageValue += child.getPocketMoney();
+        }
+        if (counter == 0) return averageValue;
+        return averageValue / counter;
+    }
+
+    @Override
+    public Float calculateAverageMoney(EntityAdministrationUnit entityAdministrationUnit) {
         int counter = 0;
         Float averageValue = 0f;
         List<EntityChild> children = repository.findAllByAdministrationUnit(entityAdministrationUnit);
@@ -102,7 +115,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     }
 
     @Override
-    public Float calculateAverageMoneyForAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation) {
+    public Float calculateAverageMoney(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation) {
         float averageValue = 0f;
         int counter = 0;
         List<EntityChild> children = repository.findAllByAdministrationUnitAndEducation(entityAdministrationUnit, entityEducation);
@@ -119,7 +132,7 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
     }
 
     @Override
-    public Float calculateAverageMoneyForEducationLvl(EntityEducation entityEducation) {
+    public Float calculateAverageMoney(EntityEducation entityEducation) {
         float averageValue = 0f;
         int counter = 0;
         List<EntityChild> children = repository.findAllByEducation(entityEducation);
