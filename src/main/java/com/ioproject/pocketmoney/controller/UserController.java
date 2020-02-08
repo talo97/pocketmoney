@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api")
@@ -70,12 +72,12 @@ public class UserController {
     @PostMapping("/addUser")
     public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO user) {
         log.info("Request to create user: {}", user);
-        if (user.containsEmptyValue()|| !checkIfEmailIsAvailable(user.getEmail()) || !checkIfUsernameIsAvailable(user.getUsername())) {
+        if (user.containsEmptyValue() || !checkIfEmailIsAvailable(user.getEmail()) || !checkIfUsernameIsAvailable(user.getUsername())
+                || !validateEmail(user.getEmail()) || !validateUserName(user.getUsername())||!validatePassword(user.getPassword())) {
             return ResponseEntity.badRequest().build();
         }
         Optional<EntityUser> result;
         result = serviceUser.saveUserByDTO(user);
-
         return result.map(response -> ResponseEntity.ok().body(modelMapper.map(response, UserPostDTO.class)))
                 .orElse(ResponseEntity.badRequest().build());
     }
@@ -99,12 +101,6 @@ public class UserController {
             return ResponseEntity.ok().body(true);
         }
     }
-    public boolean checkIfUsernameIsAvailable(String username){
-        return !serviceUser.getByUsername(username).isPresent();
-    }
-    public boolean checkIfEmailIsAvailable(String email){
-        return !serviceUser.getByEmail(email).isPresent();
-    }
 
     @PostMapping("/validateEmail")
     public ResponseEntity<Boolean> checkIfEmailIsAvailable(@Valid @RequestBody NameDTO name) {
@@ -120,7 +116,7 @@ public class UserController {
         log.info("Request to update current user: {}", userEdit);
         Optional<EntityUser> currentUser = getCurrentUserFromToken();
         if (currentUser.isPresent()) {
-            if (userEdit.getPassword() != null) {
+            if (userEdit.getPassword() != null && validatePassword(userEdit.getPassword())) {
                 currentUser.get().setPassword(userEdit.getPassword());
             }
             if (userEdit.getName() != null) {
@@ -140,12 +136,32 @@ public class UserController {
         }
         return ResponseEntity.badRequest().build();
     }
-//    @DeleteMapping("/group/deleteAll")
-//    public ResponseEntity<?> deleteAll() {
-//        log.info("Request to delete all groups");
-//        serviceUser.deleteAll();
-//        return ResponseEntity.ok().build();
-//    }
 
+    private boolean checkIfUsernameIsAvailable(String username) {
+        return !serviceUser.getByUsername(username).isPresent();
+    }
+
+    private boolean checkIfEmailIsAvailable(String email) {
+        return !serviceUser.getByEmail(email).isPresent();
+    }
+    private final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    private final Pattern VALID_PASSWORD_REGEX = Pattern.compile("^.{5,}$", Pattern.CASE_INSENSITIVE);
+
+    private final Pattern VALID_USERNAME_REGEX = Pattern.compile("^[a-z0-9_-]{3,25}$", Pattern.CASE_INSENSITIVE);
+
+    private boolean validateUserName(String username) {
+        Matcher matcher = VALID_USERNAME_REGEX.matcher(username);
+        return matcher.matches();
+    }
+    private boolean validateEmail(String email) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean validatePassword(String password) {
+        Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
+        return matcher.matches();
+    }
 
 }

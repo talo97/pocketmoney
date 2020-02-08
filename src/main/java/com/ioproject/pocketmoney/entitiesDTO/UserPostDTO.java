@@ -17,6 +17,7 @@ public class UserPostDTO {
 
     private String surname;
 
+    //TODO:: when empty return true as well
     /**
      * @return true if object has not all values besides the ID
      */
