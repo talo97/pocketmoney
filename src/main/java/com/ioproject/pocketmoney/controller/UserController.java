@@ -5,6 +5,8 @@ import com.ioproject.pocketmoney.entitiesDTO.UserGetDTO;
 import com.ioproject.pocketmoney.entitiesDTO.UserEditDTO;
 import com.ioproject.pocketmoney.entitiesDTO.UserPostDTO;
 import com.ioproject.pocketmoney.entitiesDTO.NameDTO;
+import com.ioproject.pocketmoney.service.ServiceChild;
+import com.ioproject.pocketmoney.service.ServiceGroup;
 import com.ioproject.pocketmoney.service.ServiceUser;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -15,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,10 +32,16 @@ public class UserController {
 
     private final ServiceUser serviceUser;
 
+    private final ServiceChild serviceChild;
+
+    private final ServiceGroup serviceGroup;
+
     private final ModelMapper modelMapper;
 
-    public UserController(ServiceUser serviceUser, ModelMapper modelMapper) {
+    public UserController(ServiceUser serviceUser, ServiceChild serviceChild,ServiceGroup serviceGroup, ModelMapper modelMapper) {
         this.serviceUser = serviceUser;
+        this.serviceChild = serviceChild;
+        this.serviceGroup = serviceGroup;
         this.modelMapper = modelMapper;
     }
 
@@ -39,12 +49,21 @@ public class UserController {
         return serviceUser.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    //TODO:: maybe convert return value to EntityUserGetDTO so it will be more consistent
-    // but I guess this functionality will not be even used so I don't bother XD
-    @GetMapping("/users")
-    public Collection<EntityUser> users() {
-        log.info("Request to get all users");
-        return serviceUser.getAll();
+    private List<UserGetDTO> mapListUserToGetDTO(List<EntityUser> entityUsers){
+        List<UserGetDTO> toReturn = new ArrayList<>();
+        entityUsers.forEach(user -> {
+            UserGetDTO tmp;
+            tmp = modelMapper.map(user, UserGetDTO.class);
+            tmp.setUserGroup(user.getUserGroup().getGroupName());
+            toReturn.add(tmp);
+        });
+        return toReturn;
+    }
+
+    @GetMapping("/getDefaultUsers")
+    public Collection<UserGetDTO> users() {
+        log.info("Request to get all default users");
+        return mapListUserToGetDTO(serviceUser.getAllByUserGroup(serviceGroup.getByGroupName("DEFAULT").get()));
     }
 
     /**
@@ -63,6 +82,20 @@ public class UserController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
+    @DeleteMapping("/deleteUser/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        log.info("Request to delete user: {}", id);
+        Optional<EntityUser> user = serviceUser.get(id);
+        user.ifPresent(e -> {
+            this.serviceChild.deleteChildrenFromUser(user.get());
+            serviceUser.delete(user.get());
+        });
+        if (!user.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * add user to database with default group privileges
      *
@@ -73,7 +106,7 @@ public class UserController {
     public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO user) {
         log.info("Request to create user: {}", user);
         if (user.containsEmptyValue() || !checkIfEmailIsAvailable(user.getEmail()) || !checkIfUsernameIsAvailable(user.getUsername())
-                || !validateEmail(user.getEmail()) || !validateUserName(user.getUsername())||!validatePassword(user.getPassword())) {
+                || !validateEmail(user.getEmail()) || !validateUserName(user.getUsername()) || !validatePassword(user.getPassword())) {
             return ResponseEntity.badRequest().build();
         }
         Optional<EntityUser> result;
@@ -82,16 +115,6 @@ public class UserController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
-    @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<?> deleteGroup(@PathVariable Long id) {
-        log.info("Request to delete user: {}", id);
-        try {
-            serviceUser.delete(id);
-        } catch (EmptyResultDataAccessException ex) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().build();
-    }
 
     @PostMapping(value = "/validateUsername")
     public ResponseEntity<Boolean> checkIfUsernameIsAvailable(@Valid @RequestBody NameDTO name) {
@@ -144,6 +167,7 @@ public class UserController {
     private boolean checkIfEmailIsAvailable(String email) {
         return !serviceUser.getByEmail(email).isPresent();
     }
+
     private final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     private final Pattern VALID_PASSWORD_REGEX = Pattern.compile("^.{5,}$", Pattern.CASE_INSENSITIVE);
@@ -154,6 +178,7 @@ public class UserController {
         Matcher matcher = VALID_USERNAME_REGEX.matcher(username);
         return matcher.matches();
     }
+
     private boolean validateEmail(String email) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         return matcher.matches();

@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,5 +48,10 @@ public class ServiceUserImpl extends CommonServiceImpl<EntityUser, DaoUser, Long
             this.save(user.get());
         }
         return user;
+    }
+
+    @Override
+    public List<EntityUser> getAllByUserGroup(EntityGroup group) {
+        return repository.findAllByUserGroup(group);
     }
 }

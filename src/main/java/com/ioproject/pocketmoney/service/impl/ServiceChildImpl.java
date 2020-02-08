@@ -153,4 +153,10 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         }
         return children;
     }
+
+    @Override
+    public void deleteChildrenFromUser(EntityUser user) {
+        repository.findAllByUser(user).forEach(entityChild ->
+                repository.delete(entityChild));
+    }
 }

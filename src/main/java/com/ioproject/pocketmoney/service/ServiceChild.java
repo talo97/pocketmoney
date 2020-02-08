@@ -22,4 +22,6 @@ public interface ServiceChild extends CommonService<EntityChild, Long> {
     Float calculateAverageMoney(EntityEducation entityEducation);
 
     List<EntityChild> getAllByAdministrationUnitAndEducation(EntityAdministrationUnit entityAdministrationUnit, EntityEducation entityEducation);
+
+    void deleteChildrenFromUser(EntityUser user);
 }
