@@ -101,7 +101,7 @@ public class ChildController {
         if (user.isPresent()) {
             Optional<EntityChild> currentChild = serviceChild.get(id);
             //it exist and current user is owner of the record
-            if (currentChild.isPresent() && currentChild.get().getUser().getId().equals(user.get().getId())) {
+            if (currentChild.isPresent() && currentChild.get().getUser().getId().equals(user.get().getId()) && !childPostDTO.notCorrectPocketMoneyValue()) {
                 this.serviceChild.updateChildByDTO(childPostDTO, currentChild.get());
                 return ResponseEntity.ok().body("OK child has been edited");
             }

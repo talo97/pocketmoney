@@ -118,6 +118,14 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         return getAverageMoneyFromChildList(averageValue, counter, children);
     }
 
+    @Override
+    public Float calculateAverageMoney(EntityEducation entityEducation) {
+        float averageValue = 0f;
+        int counter = 0;
+        List<EntityChild> children = repository.findAllByEducation(entityEducation);
+        return getAverageMoneyFromChildList(averageValue, counter, children);
+    }
+
     private Float getAverageMoneyFromChildList(float averageValue, int counter, List<EntityChild> children) {
         for (EntityChild child : children) {
             counter++;
@@ -126,14 +134,6 @@ public class ServiceChildImpl extends CommonServiceImpl<EntityChild, DaoChild, L
         if (counter == 0) return averageValue;
         BigDecimal roundResult = new BigDecimal( averageValue / counter).setScale(2, RoundingMode.CEILING);
         return roundResult.floatValue();
-    }
-
-    @Override
-    public Float calculateAverageMoney(EntityEducation entityEducation) {
-        float averageValue = 0f;
-        int counter = 0;
-        List<EntityChild> children = repository.findAllByEducation(entityEducation);
-        return getAverageMoneyFromChildList(averageValue, counter, children);
     }
 
     @Override

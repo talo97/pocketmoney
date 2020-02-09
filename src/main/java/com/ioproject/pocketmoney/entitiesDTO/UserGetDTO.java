@@ -21,11 +21,4 @@ public class UserGetDTO {
 
     private String userGroup;
 
-    /**
-     * @return true if object has not all values besides the ID
-     */
-    public boolean containsEmptyValue(){
-        return username == null || password == null || email == null || name == null || surname == null || userGroup == null;
-    }
-
 }
