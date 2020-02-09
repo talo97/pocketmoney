@@ -38,7 +38,7 @@ public class UserController {
 
     private final ModelMapper modelMapper;
 
-    public UserController(ServiceUser serviceUser, ServiceChild serviceChild,ServiceGroup serviceGroup, ModelMapper modelMapper) {
+    public UserController(ServiceUser serviceUser, ServiceChild serviceChild, ServiceGroup serviceGroup, ModelMapper modelMapper) {
         this.serviceUser = serviceUser;
         this.serviceChild = serviceChild;
         this.serviceGroup = serviceGroup;
@@ -49,7 +49,7 @@ public class UserController {
         return serviceUser.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    private List<UserGetDTO> mapListUserToGetDTO(List<EntityUser> entityUsers){
+    private List<UserGetDTO> mapListUserToGetDTO(List<EntityUser> entityUsers) {
         List<UserGetDTO> toReturn = new ArrayList<>();
         entityUsers.forEach(user -> {
             UserGetDTO tmp;
@@ -141,21 +141,13 @@ public class UserController {
         if (currentUser.isPresent()) {
             if (userEdit.getPassword() != null && validatePassword(userEdit.getPassword())) {
                 currentUser.get().setPassword(userEdit.getPassword());
+                serviceUser.update(currentUser.get());
+                Optional<UserGetDTO> currentUserDTO;
+                currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), UserGetDTO.class));
+                currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
+                return currentUserDTO.map(response -> ResponseEntity.ok().body(response))
+                        .orElse(ResponseEntity.badRequest().build());
             }
-            if (userEdit.getName() != null) {
-                currentUser.get().setName(userEdit.getName());
-            }
-            if (userEdit.getSurname() != null) {
-                currentUser.get().setSurname(userEdit.getSurname());
-            }
-            //save to DB
-            serviceUser.update(currentUser.get());
-
-            Optional<UserGetDTO> currentUserDTO;
-            currentUserDTO = Optional.of(modelMapper.map(currentUser.get(), UserGetDTO.class));
-            currentUserDTO.get().setUserGroup(currentUser.get().getUserGroup().getGroupName());
-            return currentUserDTO.map(response -> ResponseEntity.ok().body(response))
-                    .orElse(ResponseEntity.badRequest().build());
         }
         return ResponseEntity.badRequest().build();
     }
@@ -170,7 +162,7 @@ public class UserController {
 
     private final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
-    private final Pattern VALID_PASSWORD_REGEX = Pattern.compile("^.{5,}$", Pattern.CASE_INSENSITIVE);
+    private final Pattern VALID_PASSWORD_REGEX = Pattern.compile("^(?=.*[a-zA-Z\\d].*)[a-zA-Z\\d!@#$%&*]{5,}$", Pattern.CASE_INSENSITIVE);
 
     private final Pattern VALID_USERNAME_REGEX = Pattern.compile("^[a-z0-9_-]{3,25}$", Pattern.CASE_INSENSITIVE);
 

@@ -132,7 +132,7 @@ public class ChildController {
      * @return average money for all child records
      */
     @GetMapping("/getAveragePocketMoney")
-    public ResponseEntity<Float> getAveragePocketMoney(){
+    public ResponseEntity<Float> getAveragePocketMoney() {
         return ResponseEntity.ok().body(serviceChild.calculateAverageMoney());
     }
 
@@ -196,9 +196,14 @@ public class ChildController {
         return ResponseEntity.ok().body(lstToReturn);
     }
 
-
-    //TODO::
-    // add endpoints for: deleting child
-
-
+    @DeleteMapping("/deleteChild/{id}")
+    public ResponseEntity<?> deleteChild(@PathVariable Long id) {
+        Optional<EntityChild> child = serviceChild.get(id);
+        Optional<EntityUser> user = getCurrentUserFromToken();
+        if (child.isPresent() && user.isPresent() && (child.get().getUser().getId().equals(user.get().getId()) || user.get().getUserGroup().getGroupName().equals("ADMIN"))) {
+            this.serviceChild.delete(child.get());
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("Couldn't delete child");
+    }
 }
